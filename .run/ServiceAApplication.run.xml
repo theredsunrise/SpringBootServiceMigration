@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ServiceAApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="debug" />
+    <option name="MAIN_CLASS_NAME" value="com.example.servicea.ServiceAApplication" />
+    <module name="serviceA" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.servicea.ServiceAApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

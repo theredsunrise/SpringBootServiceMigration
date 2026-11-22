@@ -1,0 +1,20 @@
+# Maven build output
+**/target/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+
+# IDE and editor state
+.idea/
+.vscode/
+*.iml
+
+# OS and generated files
+.DS_Store
+*.class
+*.log
+
+# Local runtime output
+/logs/
