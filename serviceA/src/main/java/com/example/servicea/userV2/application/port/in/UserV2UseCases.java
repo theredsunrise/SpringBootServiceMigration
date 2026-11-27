@@ -1,10 +1,11 @@
 package com.example.servicea.userV2.application.port.in;
 
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.userV2.application.command.UserV2PatchCommand;
 import com.example.servicea.userV2.application.command.UserV2WriteCommand;
 import com.example.servicea.userV2.domain.UserV2;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface UserV2UseCases {
@@ -12,7 +13,7 @@ public interface UserV2UseCases {
 
     UserV2 save(UserV2 user);
 
-    List<UserV2> list();
+    PageWrapper<UserV2> list(Pageable pageable);
 
     UserV2 get(UUID id);
 

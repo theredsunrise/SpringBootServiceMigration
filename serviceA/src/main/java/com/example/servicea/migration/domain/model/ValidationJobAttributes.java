@@ -2,7 +2,7 @@ package com.example.servicea.migration.domain.model;
 
 import java.time.LocalDateTime;
 
-public record ValidationJobStatus(
+public record ValidationJobAttributes(
         Long executionId,
         Long instanceId,
         String jobName,
@@ -20,5 +20,4 @@ public record ValidationJobStatus(
         long rollbackCount,
         long skipCount
 ) {
-
 }

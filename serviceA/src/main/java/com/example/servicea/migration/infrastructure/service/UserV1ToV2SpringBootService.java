@@ -3,6 +3,7 @@ package com.example.servicea.migration.infrastructure.service;
 import com.example.servicea.migration.application.exception.ControllerDisabledException;
 import com.example.servicea.migration.application.port.in.FeatureFlagsUseCases;
 import com.example.servicea.migration.domain.mapper.UserV1ToUserV2Mapper;
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.userV1.application.command.UserV1PatchCommand;
 import com.example.servicea.userV1.application.command.UserV1WriteCommand;
 import com.example.servicea.userV1.application.port.in.UserV1UseCases;
@@ -11,10 +12,10 @@ import com.example.servicea.userV1.infrastructure.service.UserV1ServiceFactory;
 import com.example.servicea.userV2.application.port.in.UserV2UseCases;
 import com.example.servicea.userV2.infrastructure.service.UserV2ServiceFactory;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -55,9 +56,9 @@ public class UserV1ToV2SpringBootService implements UserV1UseCases {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserV1> list() {
+    public PageWrapper<UserV1> list(Pageable pageable) {
         assertUseV1();
-        return userService.list();
+        return userService.list(pageable);
     }
 
     @Override

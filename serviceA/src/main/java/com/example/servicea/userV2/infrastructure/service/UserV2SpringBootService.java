@@ -2,12 +2,13 @@ package com.example.servicea.userV2.infrastructure.service;
 
 import com.example.servicea.userV2.application.command.UserV2PatchCommand;
 import com.example.servicea.userV2.application.command.UserV2WriteCommand;
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.userV2.application.port.in.UserV2UseCases;
 import com.example.servicea.userV2.domain.UserV2;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,8 +32,8 @@ public class UserV2SpringBootService implements UserV2UseCases {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserV2> list() {
-        return userService.list();
+    public PageWrapper<UserV2> list(Pageable pageable) {
+        return userService.list(pageable);
     }
 
     @Override

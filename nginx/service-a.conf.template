@@ -5,15 +5,12 @@ server {
 
     location / {
         set $service_a service-a;
-        proxy_pass http://$service_a:8080;
+        proxy_pass http://$service_a:${PORT};
 
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-Host $http_host;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-        add_header Access-Control-Allow-Origin "http://localhost:8080" always;
-        add_header Vary "Origin" always;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.servicea.migration.infrastructure.service;
+package com.example.servicea.migration.infrastructure.service.validation;
 
 import com.example.servicea.migration.application.port.in.MigrationWriterUseCases;
 import com.example.servicea.migration.domain.model.BackFillStatus;

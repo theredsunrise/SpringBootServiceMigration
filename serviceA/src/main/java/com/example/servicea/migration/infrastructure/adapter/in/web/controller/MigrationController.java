@@ -3,7 +3,7 @@ package com.example.servicea.migration.infrastructure.adapter.in.web.controller;
 import com.example.servicea.migration.application.port.in.FeatureFlagsUseCases;
 import com.example.servicea.migration.application.port.in.MigrationProcessUseCases;
 import com.example.servicea.migration.application.port.in.MigrationWriterUseCases;
-import com.example.servicea.migration.domain.model.ValidationJobStatus;
+import com.example.servicea.migration.domain.model.ValidationJobAttributes;
 import com.example.servicea.migration.infrastructure.adapter.in.web.dto.BackFillStatusResponse;
 import com.example.servicea.migration.infrastructure.adapter.in.web.dto.MigrationResponse;
 import com.example.servicea.migration.infrastructure.adapter.in.web.dto.MigrationStateRequest;
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -59,11 +60,19 @@ public class MigrationController {
         return mapper.toValidationStatusResponses(writer.getValidationStatuses());
     }
 
+    @GetMapping("/validation-job-status")
+    @Operation(
+            summary = "Get validation job status.",
+            description = "Get the current validation job status, or an empty result if none is present.")
+    public Optional<ValidationJobAttributes> getValidationJobStatus() {
+        return process.getValidationJobStatus();
+    }
+
     @PostMapping("/start-validation-job")
     @Operation(
             summary = "Start or inspect the validation job.",
             description = "Starts a new validation job if none is running; otherwise returns the current execution status.")
-    public ValidationJobStatus startValidationJob() {
+    public ValidationJobAttributes startValidationJob() {
         var result = process.startValidationJob();
         log.info("**** EXIT");
         return result;

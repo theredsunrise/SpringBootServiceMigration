@@ -2,6 +2,7 @@ package com.example.servicea.userV1.infrastructure.adapter.in.web.controller;
 
 import com.example.servicea.shared.exception.UserV1NotFoundException;
 import com.example.servicea.shared.exception.UsernameConflictException;
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.shared.infrastructure.adapter.in.web.exception.GlobalExceptionHandler;
 import com.example.servicea.shared.util.UUIDv7Generator;
 import com.example.servicea.support.CacheTestConfiguration;
@@ -115,12 +116,15 @@ class UserV1ControllerTest {
 
     @Test
     void listsUsers() throws Exception {
-        when(useCases.list()).thenReturn(List.of(user));
+        when(useCases.list(any())).thenReturn(new PageWrapper<>(List.of(user),
+                new PageWrapper.PageInfo(0, 1, 20, 1)));
 
         mvc.perform(get("/api/v1/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(id.toString()))
-                .andExpect(jsonPath("$[0].username").value("alice"));
+                .andExpect(jsonPath("$.items[0].id").value(id.toString()))
+                .andExpect(jsonPath("$.items[0].username").value("alice"))
+                .andExpect(jsonPath("$.pagination.currentPage").value(0))
+                .andExpect(jsonPath("$.pagination.totalItems").value(1));
     }
 
     @Test

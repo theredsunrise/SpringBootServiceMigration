@@ -1,5 +1,6 @@
 package com.example.servicea.userV1.infrastructure.adapter.in.web.controller;
 
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapperResponse;
 import com.example.servicea.userV1.application.port.in.UserV1UseCases;
 import com.example.servicea.userV1.domain.UserV1;
 import com.example.servicea.userV1.infrastructure.adapter.in.web.dto.UserV1PatchRequest;
@@ -9,12 +10,15 @@ import com.example.servicea.userV1.infrastructure.adapter.in.web.mapper.UserV1Re
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,8 +40,14 @@ public class UserV1Controller {
 
     @GetMapping
     @Operation(summary = "List users.")
-    public List<UserV1Response> list() {
-        return service.list().stream().map(mapper::toResponse).toList();
+    public PageWrapperResponse<UserV1Response> list(
+            @RequestParam(defaultValue = "0") @Min(0) @Max(100) int page,
+            @RequestParam(defaultValue = "20") @Min(20) @Max(100) int size,
+            @RequestParam(defaultValue = "ASC") Sort.Direction sort
+
+    ) {
+        var pageable = PageRequest.of(page, size, Sort.by(sort, "id"));
+        return mapper.toResponse(service.list(pageable));
     }
 
     @GetMapping("/{id}")

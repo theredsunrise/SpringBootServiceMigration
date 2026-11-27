@@ -1,5 +1,6 @@
 package com.example.servicea.userV2.infrastructure.adapter.in.web.controller;
 
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapperResponse;
 import com.example.servicea.userV2.application.port.in.UserV2UseCases;
 import com.example.servicea.userV2.domain.UserV2;
 import com.example.servicea.userV2.infrastructure.adapter.in.web.dto.UserV2PatchRequest;
@@ -9,13 +10,16 @@ import com.example.servicea.userV2.infrastructure.adapter.in.web.mapper.UserV2Re
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -39,8 +43,13 @@ public class UserV2Controller {
 
     @GetMapping
     @Operation(summary = "List V2 users.", description = "Returns all users stored through the V2 API.")
-    public List<UserV2Response> list() {
-        return service.list().stream().map(mapper::toResponse).toList();
+    public PageWrapperResponse<UserV2Response> list(
+            @RequestParam(defaultValue = "0") @Min(0) @Max(100) int page,
+            @RequestParam(defaultValue = "20") @Min(20) @Max(100) int size,
+            @RequestParam(defaultValue = "ASC") Sort.Direction sort
+    ) {
+        var pageable = PageRequest.of(page, size, Sort.by(sort, "id"));
+        return mapper.toResponse(service.list(pageable));
     }
 
     @GetMapping("/{id}")

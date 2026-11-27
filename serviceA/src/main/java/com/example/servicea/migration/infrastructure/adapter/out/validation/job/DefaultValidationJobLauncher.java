@@ -3,8 +3,8 @@ package com.example.servicea.migration.infrastructure.adapter.out.validation.job
 import com.example.servicea.migration.application.exception.ValidationJobStatusUnknownException;
 import com.example.servicea.migration.application.port.in.MigrationWriterUseCases;
 import com.example.servicea.migration.application.port.in.ValidationJobLauncher;
-import com.example.servicea.migration.domain.model.ValidationJobStatus;
-import com.example.servicea.migration.infrastructure.adapter.out.validation.mapper.ValidationJobStatusMapper;
+import com.example.servicea.migration.domain.model.ValidationJobAttributes;
+import com.example.servicea.migration.infrastructure.adapter.out.validation.mapper.ValidationJobAttrMapper;
 import com.example.servicea.shared.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,19 +34,18 @@ public class DefaultValidationJobLauncher implements ValidationJobLauncher {
     private final JobRepository jobRepository;
     private final Job validationJob; //name must match the JOB_NAME
 
-    private final ValidationJobStatusMapper validationJobStatusMapper;
+    private final ValidationJobAttrMapper validationJobAttrsMapper;
     private final MigrationWriterUseCases writer;
 
     private final ReentrantLock lock = new ReentrantLock();
 
     @Override
-    public ValidationJobStatus start() {
+    public ValidationJobAttributes start() {
         return Utils.sync(lock, () -> {
             UUID lockId = UUID.randomUUID();
             if (!writer.lock(lockId)) {
                 log.info("**** Writer lock locked");
-                return getLastJobExecution()
-                        .map(validationJobStatusMapper::fromJobExecution)
+                return getValidationJobAttributes()
                         .orElseThrow(ValidationJobStatusUnknownException::new);
             }
 
@@ -54,16 +53,21 @@ public class DefaultValidationJobLauncher implements ValidationJobLauncher {
                 var lastExecution = getLastJobExecution();
                 if (lastExecution.filter(this::isRunning).isPresent()) {
                     log.info("**** Getting info from running job instance!");
-                    return validationJobStatusMapper.fromJobExecution(lastExecution.get());
+                    return validationJobAttrsMapper.fromJobExecution(lastExecution.get());
                 }
 
                 writer.clearValidationStatuses();
                 log.info("**** Starting new job instance!");
-                return validationJobStatusMapper.fromJobExecution(jobOperator.startNextInstance(validationJob));
+                return validationJobAttrsMapper.fromJobExecution(jobOperator.startNextInstance(validationJob));
             } finally {
                 writer.unlock(lockId);
             }
         });
+    }
+
+    @Override
+    public Optional<ValidationJobAttributes> getStatus() {
+        return getValidationJobAttributes();
     }
 
     private boolean isRunning(JobExecution execution) {
@@ -76,5 +80,9 @@ public class DefaultValidationJobLauncher implements ValidationJobLauncher {
     private Optional<JobExecution> getLastJobExecution() {
         var instance = jobRepository.getLastJobInstance(DefaultValidationJobLauncher.JOB_NAME);
         return Optional.ofNullable(instance != null ? jobRepository.getLastJobExecution(instance) : null);
+    }
+
+    private Optional<ValidationJobAttributes> getValidationJobAttributes() {
+        return getLastJobExecution().map(validationJobAttrsMapper::fromJobExecution);
     }
 }

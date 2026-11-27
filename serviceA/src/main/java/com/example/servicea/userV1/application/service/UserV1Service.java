@@ -2,14 +2,15 @@ package com.example.servicea.userV1.application.service;
 
 import com.example.servicea.shared.exception.UserV1NotFoundException;
 import com.example.servicea.shared.exception.UsernameConflictException;
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.userV1.application.command.UserV1PatchCommand;
 import com.example.servicea.userV1.application.command.UserV1WriteCommand;
 import com.example.servicea.userV1.application.port.in.UserV1UseCases;
 import com.example.servicea.userV1.application.port.out.UserV1PersistencePort;
 import com.example.servicea.userV1.domain.UserV1;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -33,8 +34,8 @@ public class UserV1Service implements UserV1UseCases {
     }
 
     @Override
-    public List<UserV1> list() {
-        return users.findAll();
+    public PageWrapper<UserV1> list(Pageable pageable) {
+        return users.findAll(pageable);
     }
 
     @Override

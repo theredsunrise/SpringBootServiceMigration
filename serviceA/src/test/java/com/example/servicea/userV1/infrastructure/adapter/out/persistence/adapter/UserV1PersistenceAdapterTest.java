@@ -16,6 +16,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -38,7 +39,7 @@ class UserV1PersistenceAdapterTest {
 
         assertThat(adapter.save(user)).isEqualTo(user);
         assertThat(adapter.findById(user.id())).contains(user);
-        assertThat(adapter.findAll()).contains(user);
+        assertThat(adapter.findAll(PageRequest.of(0, 100)).items()).contains(user);
         assertThat(adapter.existsByUsername(user.username())).isTrue();
 
         adapter.delete(user);
@@ -53,7 +54,7 @@ class UserV1PersistenceAdapterTest {
         UserV1 lowerCase = adapter.save(user(username, "Lower"));
         UserV1 upperCase = adapter.save(user(username.toUpperCase(), "Upper"));
 
-        assertThat(adapter.findAll()).contains(lowerCase, upperCase);
+        assertThat(adapter.findAll(PageRequest.of(0, 100)).items()).contains(lowerCase, upperCase);
     }
 
     @Test

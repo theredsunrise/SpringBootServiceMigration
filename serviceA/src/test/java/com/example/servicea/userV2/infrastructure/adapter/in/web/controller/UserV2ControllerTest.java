@@ -2,6 +2,7 @@ package com.example.servicea.userV2.infrastructure.adapter.in.web.controller;
 
 import com.example.servicea.shared.exception.UserV2NotFoundException;
 import com.example.servicea.shared.exception.UsernameConflictException;
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.shared.infrastructure.adapter.in.web.exception.GlobalExceptionHandler;
 import com.example.servicea.support.CacheTestConfiguration;
 import com.example.servicea.userV2.application.command.UserV2PatchCommand;
@@ -94,19 +95,28 @@ class UserV2ControllerTest {
 
     @Test
     void listsUsers() {
-        when(useCases.list()).thenReturn(List.of(user));
+        when(useCases.list(any())).thenReturn(new PageWrapper<>(List.of(user),
+                new PageWrapper.PageInfo(0, 1, 20, 1)));
 
         assertThat(mvc.get().uri("/api/v2/users"))
                 .hasStatusOk()
                 .bodyJson().isLenientlyEqualTo("""
-                        [{
-                          "id": "8f2a9d72-5f46-4c54-9ea1-10ee21d227c5",
-                          "username": "alice",
-                          "name": "Alice",
-                          "surname": "Smith",
-                          "createdAt": "2026-01-01T12:00:00Z",
-                          "updatedAt": "2026-01-01T12:00:00Z"
-                        }]
+                        {
+                          "items": [{
+                            "id": "8f2a9d72-5f46-4c54-9ea1-10ee21d227c5",
+                            "username": "alice",
+                            "name": "Alice",
+                            "surname": "Smith",
+                            "createdAt": "2026-01-01T12:00:00Z",
+                            "updatedAt": "2026-01-01T12:00:00Z"
+                          }],
+                          "pagination": {
+                            "currentPage": 0,
+                            "totalPages": 1,
+                            "pageSize": 20,
+                            "totalItems": 1
+                          }
+                        }
                         """);
     }
 

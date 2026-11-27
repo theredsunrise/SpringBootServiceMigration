@@ -1,8 +1,8 @@
-package com.example.servicea.migration.infrastructure.service;
+package com.example.servicea.migration.infrastructure.service.validation;
 
 import com.example.servicea.migration.application.port.in.MigrationProcessUseCases;
 import com.example.servicea.migration.domain.model.BackFillStatus;
-import com.example.servicea.migration.domain.model.ValidationJobStatus;
+import com.example.servicea.migration.domain.model.ValidationJobAttributes;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,12 @@ public class MigrationProcessSpringBootService implements MigrationProcessUseCas
     }
 
     @Override
-    public ValidationJobStatus startValidationJob() {
+    public ValidationJobAttributes startValidationJob() {
         return service.startValidationJob();
+    }
+
+    @Override
+    public Optional<ValidationJobAttributes> getValidationJobStatus() {
+        return service.getValidationJobStatus();
     }
 }

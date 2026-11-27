@@ -1,6 +1,6 @@
 package com.example.servicea.migration.infrastructure.adapter.out.validation.mapper;
 
-import com.example.servicea.migration.domain.model.ValidationJobStatus;
+import com.example.servicea.migration.domain.model.ValidationJobAttributes;
 import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.step.StepExecution;
 import org.springframework.stereotype.Component;
@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 import java.util.function.ToLongFunction;
 
 @Component
-public class ValidationJobStatusMapper {
+public class ValidationJobAttrMapper {
 
-    public ValidationJobStatus fromJobExecution(JobExecution execution) {
+    public ValidationJobAttributes fromJobExecution(JobExecution execution) {
         var jobInstance = execution.getJobInstance();
         var exitStatus = execution.getExitStatus();
 
-        return new ValidationJobStatus(
+        return new ValidationJobAttributes(
                 execution.getId(),
                 jobInstance.getInstanceId(),
                 jobInstance.getJobName(),

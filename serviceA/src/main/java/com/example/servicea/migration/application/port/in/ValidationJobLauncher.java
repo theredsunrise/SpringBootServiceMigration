@@ -1,7 +1,10 @@
 package com.example.servicea.migration.application.port.in;
 
-import com.example.servicea.migration.domain.model.ValidationJobStatus;
+import com.example.servicea.migration.domain.model.ValidationJobAttributes;
+
+import java.util.Optional;
 
 public interface ValidationJobLauncher {
-    ValidationJobStatus start();
+    ValidationJobAttributes start();
+    Optional<ValidationJobAttributes> getStatus();
 }

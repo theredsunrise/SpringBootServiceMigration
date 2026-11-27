@@ -1,13 +1,14 @@
 package com.example.servicea.userV1.infrastructure.service;
 
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.userV1.application.command.UserV1PatchCommand;
 import com.example.servicea.userV1.application.command.UserV1WriteCommand;
 import com.example.servicea.userV1.application.port.in.UserV1UseCases;
 import com.example.servicea.userV1.domain.UserV1;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,8 +32,8 @@ public class UserV1SpringBootService implements UserV1UseCases {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserV1> list() {
-        return userService.list();
+    public PageWrapper<UserV1> list(Pageable page) {
+        return userService.list(page);
     }
 
     @Override

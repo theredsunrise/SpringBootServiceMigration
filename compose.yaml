@@ -2,11 +2,11 @@ services:
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_DB: ${DB_NAME:?DB_NAME must be set in .env}
-      POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME must be set in .env}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+      POSTGRES_DB: ${DB_NAME:-servicea}
+      POSTGRES_USER: ${DB_USERNAME:-servicea}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-servicea}
     ports:
-      - "${DB_PORT:?DB_PORT must be set in .env}:5432"
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     depends_on:
@@ -21,7 +21,7 @@ services:
   redis:
     image: redis:8-alpine
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "6379:6379"
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
@@ -33,24 +33,25 @@ services:
     build:
       context: ./serviceA
       dockerfile: Dockerfile
+      args:
+        PORT: ${PORT:-8080}
     environment:
-      PORT: "8080"
-      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:?DB_NAME must be set in .env}
-      DB_USERNAME: ${DB_USERNAME:?DB_USERNAME must be set in .env}
-      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+      PORT: ${PORT:-8080}
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-servicea}
+      DB_USERNAME: ${DB_USERNAME:-servicea}
+      DB_PASSWORD: ${DB_PASSWORD:-servicea}
       REDIS_HOST: redis
-      REDIS_PORT: "6379"
     expose:
-      - "8080"
+      - "${PORT:-8080}"
     deploy:
-      replicas: 1
+      replicas: 3
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "bash -c '</dev/tcp/localhost/8080'" ]
+      test: [ "CMD-SHELL", "bash -c '</dev/tcp/localhost/${PORT:-8080}'" ]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -60,10 +61,13 @@ services:
 
   service-a-proxy:
     image: nginx:alpine
+    environment:
+      PORT: ${PORT:-8080}
+      NGINX_ENVSUBST_FILTER: "^PORT$"
     ports:
-      - "${PORT:?PORT must be set in .env}:80"
+      - "${PORT:-8080}:80"
     volumes:
-      - ./nginx/service-a.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/service-a.conf.template:/etc/nginx/templates/default.conf.template:ro
     depends_on:
       service-a:
         condition: service_healthy

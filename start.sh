@@ -2,4 +2,4 @@
 set -eu
 mvn clean package -Dmaven.test.skip=true
 docker compose --profile prod build --no-cache
-docker compose --profile prod up --build -d
+docker compose --profile prod up -d

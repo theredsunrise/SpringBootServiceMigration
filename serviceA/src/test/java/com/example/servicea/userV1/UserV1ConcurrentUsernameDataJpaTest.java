@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,15 +80,15 @@ class UserV1ConcurrentUsernameDataJpaTest {
             assertThat(sawOptimisticLockingFailure)
                     .as("at least one concurrent update should hit optimistic locking")
                     .isTrue();
-            List<UserV1> persisted = persistence.findAll().stream()
+            List<UserV1> persisted = persistence.findAll(PageRequest.of(0, 100)).items().stream()
                     .filter(user -> user.username().equals(username)).toList();
             assertThat(persisted).hasSize(1);
         } finally {
-            persistence.findAll().stream()
+            persistence.findAll(PageRequest.of(0, 100)).items().stream()
                     .filter(user -> user.username().equals(username))
                     .forEach(persistence::delete);
         }
-        assertThat(persistence.findAll()).isEmpty();
+        assertThat(persistence.findAll(PageRequest.of(0, 100)).items()).isEmpty();
     }
 
     private Throwable update(UUID id, String username, String name, CountDownLatch ready, CountDownLatch start) {

@@ -2,6 +2,7 @@ package com.example.servicea.userV1.infrastructure.adapter.out.persistence.repos
 
 import com.example.servicea.shared.exception.UserV1ConflictException;
 import com.example.servicea.shared.exception.UsernameConflictException;
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.userV1.application.port.out.UserV1PersistencePort;
 import com.example.servicea.userV1.domain.UserV1;
 import com.example.servicea.userV1.infrastructure.adapter.out.persistence.mapper.UserV1PersistenceMapper;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.StaleStateException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -69,8 +71,8 @@ public class UserV1PersistenceAdapter implements UserV1PersistencePort {
     }
 
     @Override
-    public List<UserV1> findAll() {
-        return repository.findAll().stream().map(mapper::toDomain).toList();
+    public PageWrapper<UserV1> findAll(Pageable pageable) {
+        return mapper.toDomain(repository.findAll(pageable));
     }
 
     @Override

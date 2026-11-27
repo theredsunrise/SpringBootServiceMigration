@@ -1,6 +1,8 @@
 package com.example.servicea.userV2.application.port.out;
 
+import com.example.servicea.shared.infrastructure.adapter.in.web.model.PageWrapper;
 import com.example.servicea.userV2.domain.UserV2;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +17,7 @@ public interface UserV2PersistencePort {
 
     Optional<UserV2> findById(UUID id);
 
-    List<UserV2> findAll();
+    PageWrapper<UserV2> findAll(Pageable pageable);
 
     void delete(UserV2 user);
 

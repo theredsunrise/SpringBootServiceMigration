@@ -5,7 +5,7 @@ import com.example.servicea.migration.application.port.in.MigrationProcessUseCas
 import com.example.servicea.migration.application.port.in.ValidationJobLauncher;
 import com.example.servicea.migration.domain.mapper.UserV1ToUserV2Mapper;
 import com.example.servicea.migration.domain.model.BackFillStatus;
-import com.example.servicea.migration.domain.model.ValidationJobStatus;
+import com.example.servicea.migration.domain.model.ValidationJobAttributes;
 import com.example.servicea.userV1.application.port.out.UserV1PersistencePort;
 import com.example.servicea.userV1.domain.UserV1;
 import com.example.servicea.userV2.application.port.out.UserV2PersistencePort;
@@ -49,8 +49,16 @@ public class MigrationProcessService implements MigrationProcessUseCases {
     }
 
     @Override
-    public ValidationJobStatus startValidationJob() {
+    public ValidationJobAttributes startValidationJob() {
         featureFlag.getState().assertValidateV2();
         return validationJobLauncher.start();
     }
+
+    @Override
+    public Optional<ValidationJobAttributes> getValidationJobStatus() {
+        featureFlag.getState().assertValidateV2();
+        return validationJobLauncher.getStatus();
+    }
+
+
 }
