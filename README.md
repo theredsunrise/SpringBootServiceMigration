@@ -2,6 +2,18 @@
 
 A public example of a phased migration from a `users_v1` table to a `users_v2` table in a Spring Boot service. It demonstrates how to keep writes available while preparing the new schema, backfilling existing records, validating the copy, and switching traffic to V2.
 
+## Technology stack
+
+- **Language and build:** Java 21, Maven
+- **Backend:** Spring Boot 4, Spring MVC REST APIs, Spring Data JPA, Hibernate, Bean Validation
+- **Database and migrations:** PostgreSQL, Flyway
+- **Caching and coordination:** Redis, Spring Cache, Spring Data Redis
+- **Batch processing:** Spring Batch JDBC
+- **API documentation:** OpenAPI and Swagger UI (springdoc)
+- **Mapping and code generation:** MapStruct, Lombok
+- **Operations:** Spring Boot Actuator, Docker Compose, Nginx
+- **Testing and load simulation:** JUnit, Spring Boot Test, Testcontainers (PostgreSQL), Gatling
+
 ## Migration flow
 
 The rollout is controlled by a persisted migration state, changed by an operator through the migration API:
@@ -12,9 +24,9 @@ The rollout is controlled by a persisted migration state, changed by an operator
 4. **`ActivatedV2AndSync`** — after backfill and validation have been reviewed, V2 becomes available and V1 is unavailable. V2 writes are also synchronized to V1 during this transition period.
 5. **`ActivatedV2`** — V2 remains available, V1 remains unavailable, and synchronization to V1 stops.
 
-The application records backfill and validation status, but does not automatically advance migration states when a job finishes. Operators review the results and request each state transition. `ActivatedV2` can be moved back to `ActivatedV1` if a rollback is needed.
+The application records backfill and validation status, but does not automatically advance migration states when a job finishes. Operators review the results and request each state transition. Every migration step can return to `ActivatedV1` for rollback.
 
-Backfill batch results, including their status and ID range, are available at `GET /api/migration/backfill-statuses`. During `BackFillV2` and later V2 states, a Spring Batch job validates that V1 and V2 records exist and that their IDs, usernames, timestamps, and mapped names match. Start it with `POST /api/migration/start-validation-job`; check execution progress at `GET /api/migration/validation-job-status` and record mismatches at `GET /api/migration/validation-statuses`.
+**Backfill** runs on a scheduler using `FOR UPDATE SKIP LOCKED`, so service **replicas can process records concurrently** without colliding. Backfill batch results, including their status and ID range, are available at `GET /api/migration/backfill-statuses`. During `BackFillV2` and later V2 states, a **Spring Batch job validates that V1 and V2 records exist** and that their IDs, usernames, timestamps, and mapped names match. Validation runs across three service replicas and uses an atomic **Redis lock to prevent concurrent job starts**. Start it with `POST /api/migration/start-validation-job`; check execution progress at `GET /api/migration/validation-job-status` and record mismatches at `GET /api/migration/validation-statuses`.
 
 V1 stores a single `name`; the example maps it to V2 `name` and `surname` by splitting on the last space. The reverse mapping joins those fields with a space.
 

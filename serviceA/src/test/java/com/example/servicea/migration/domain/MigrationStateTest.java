@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MigrationStateTest {
     private static final Map<MigrationState, Set<MigrationState>> ALLOWED_TRANSITIONS = Map.of(
-            MigrationState.StartV2, Set.of(MigrationState.StartV2, MigrationState.BackFillV2),
-            MigrationState.BackFillV2, Set.of(MigrationState.BackFillV2, MigrationState.ActivatedV2AndSync),
-            MigrationState.ActivatedV2AndSync, Set.of(MigrationState.ActivatedV2AndSync, MigrationState.ActivatedV2),
+            MigrationState.StartV2, Set.of(MigrationState.StartV2, MigrationState.BackFillV2, MigrationState.ActivatedV1),
+            MigrationState.BackFillV2, Set.of(MigrationState.BackFillV2, MigrationState.ActivatedV2AndSync, MigrationState.ActivatedV1),
+            MigrationState.ActivatedV2AndSync, Set.of(MigrationState.ActivatedV2AndSync, MigrationState.ActivatedV2, MigrationState.ActivatedV1),
             MigrationState.ActivatedV2, Set.of(MigrationState.ActivatedV2, MigrationState.ActivatedV1),
             MigrationState.ActivatedV1, Set.of(MigrationState.ActivatedV1, MigrationState.StartV2)
     );

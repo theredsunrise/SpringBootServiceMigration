@@ -37,21 +37,21 @@ public enum MigrationState {
 
     private static boolean shouldTransitionFromStartV2(MigrationState newState) {
         return switch (newState) {
-            case StartV2, BackFillV2 -> true;
+            case StartV2, BackFillV2, ActivatedV1 -> true;
             default -> false;
         };
     }
 
     private static boolean shouldTransitionFromBackFillV2(MigrationState newState) {
         return switch (newState) {
-            case BackFillV2, ActivatedV2AndSync -> true;
+            case BackFillV2, ActivatedV2AndSync, ActivatedV1 -> true;
             default -> false;
         };
     }
 
     private static boolean shouldTransitionFromActivatedV2AndSync(MigrationState newState) {
         return switch (newState) {
-            case ActivatedV2AndSync, ActivatedV2 -> true;
+            case ActivatedV2AndSync, ActivatedV2, ActivatedV1 -> true;
             default -> false;
         };
     }

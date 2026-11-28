@@ -33,7 +33,6 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <springdoc.version>3.0.0</springdoc.version>
         <testcontainers.version>2.0.5</testcontainers.version>
-        <flamingock.version>1.4.5</flamingock.version>
         <gatling.version>3.16.1</gatling.version>
         <gatling-maven-plugin.version>4.21.10</gatling-maven-plugin.version>
     </properties>
@@ -64,13 +63,6 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <optional>true</optional>
-            </dependency>
-            <dependency>
-                <groupId>io.flamingock</groupId>
-                <artifactId>flamingock-bom</artifactId>
-                <version>${flamingock.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>io.gatling.highcharts</groupId>
